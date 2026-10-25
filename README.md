@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #e9d5ff, #fce7f3);
+            color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game {
+            width: 350px;
+            max-width: 92%;
+            background: white;
+            padding: 30px 20px;
+            border: 1px solid white;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 40px #6d28d920;
+        }
+
+        h1 {
+            font-size: 27px;
+            letter-spacing: 3px;
+            margin: 0;
+            color: #4338ca;
+        }
+
+        .line {
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            margin: 12px auto 20px;
+            border-radius: 5px;
+        }
+
+        #msg {
+            font-size: 15px;
+            font-weight: normal;
+            color: #6b21a8;
+            margin-bottom: 22px;
+        }
+
+        .box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            font-size: 38px;
+            font-weight: bold;
+            background: #f5f3ff;
+            color: #4f46e5;
+            border: 1px solid #ddd6fe;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cell:hover:enabled {
+            background: #ede9fe;
+            border-color: #818cf8;
+            transform: translateY(-3px);
+        }
+
+        .cell:disabled {
+            cursor: default;
+        }
+
+        .cell.x {
+            color: #4f46e5;
+        }
+
+        .cell.o {
+            color: #e11d48;
+        }
+
+        .cell.winner {
+            background: #16a34a;
+            color: white;
+            border-color: #16a34a;
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop {
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        #reset {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #4f46e5, #9333ea);
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px #9333ea40;
+        }
+
+        .footer {
+            margin-top: 18px;
+            font-size: 11px;
+            color: #888;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game">
+
+        <h1>TIC TAC TOE</h1>
+        <div class="line"></div>
+
+        <h3 id="msg">Let's Play!</h3>
+
+        <div class="box">
+            <button class="cell" onclick="play(0)"></button>
+            <button class="cell" onclick="play(1)"></button>
+            <button class="cell" onclick="play(2)"></button>
+            <button class="cell" onclick="play(3)"></button>
+            <button class="cell" onclick="play(4)"></button>
+            <button class="cell" onclick="play(5)"></button>
+            <button class="cell" onclick="play(6)"></button>
+            <button class="cell" onclick="play(7)"></button>
+            <button class="cell" onclick="play(8)"></button>
+        </div>
+
+        <button id="reset" onclick="resetGame()">↻ Restart Game</button>
+
+        <div class="footer">TWO PLAYERS · ONE WINNER</div>
+
+    </div>
+
+    <script>
+        let cells = document.querySelectorAll(".cell");
+        let player = "X";
+        let gameOver = false;
+
+        let win = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+        ];
+
+        function play(n) {
+
+            if (cells[n].innerText != "" || gameOver) {
+                return;
+            }
+
+            cells[n].innerText = player;
+            cells[n].classList.add(player.toLowerCase());
+            cells[n].disabled = true;
+
+            if (checkWin()) {
+                document.getElementById("msg").innerText =
+                    "Player " + player + " Wins! 🎉";
+
+                gameOver = true;
+
+                for (let i = 0; i < 9; i++) {
+                    cells[i].disabled = true;
+                }
+
+                return;
+            }
+
+            let draw = true;
+
+            for (let i = 0; i < 9; i++) {
+                if (cells[i].innerText == "") {
+                    draw = false;
+                }
+            }
+
+            if (draw) {
+                document.getElementById("msg").innerText =
+                    "It's a Draw! 🤝";
+
+                gameOver = true;
+                return;
+            }
+
+            if (player == "X") {
+                player = "O";
+            } else {
+                player = "X";
+            }
+        }
+
+        function checkWin() {
+
+            for (let i = 0; i < win.length; i++) {
+
+                let a = win[i][0];
+                let b = win[i][1];
+                let c = win[i][2];
+
+                if (
+                    cells[a].innerText != "" &&
+                    cells[a].innerText == cells[b].innerText &&
+                    cells[b].innerText == cells[c].innerText
+                ) {
+                    cells[a].classList.add("winner");
+                    cells[b].classList.add("winner");
+                    cells[c].classList.add("winner");
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function resetGame() {
+
+            for (let i = 0; i < 9; i++) {
+                cells[i].innerText = "";
+                cells[i].disabled = false;
+                cells[i].classList.remove("x", "o", "winner");
+            }
+
+            player = "X";
+            gameOver = false;
+
+            document.getElementById("msg").innerText = "Let's Play!";
+        }
+    </script>
+
+</body>
+</html>
